@@ -5,14 +5,13 @@ pub mod users {
     pub struct User {
         user_id: i32,
         username: String,
-        password_hash: String,
+        // password_hash: String,
     }
 
     impl User {
-        pub fn add_new_user(conn: &Connection, username: String, password: String) -> Result<User>  {
+        pub fn add_new_user(conn: &Connection, username: String, password_hash: String) -> Result<User>  {
             let mut new_user = User {
                 user_id: 0,
-                password_hash: password,
                 username: username,
             };
             let inserted_row_cnt = conn.execute(
@@ -20,7 +19,7 @@ pub mod users {
                     (username, password_hash)\
                  VALUES\
                     (?1,?2)",
-                (&new_user.username, &new_user.password_hash))?;
+                (&new_user.username, password_hash))?;
             println!("insert return: {:?}", inserted_row_cnt);
 
             new_user.user_id = conn.last_insert_rowid() as i32;
