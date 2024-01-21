@@ -3,15 +3,13 @@
 
 use tauri::State;
 use crate::db_connection::db_connection::DbConnection;
-use crate::hash::hash::hash;
-use crate::users::users::{create_table, show_all};
+use crate::models::users::{User, create_table, show_all};
+use crate::utils::hash::hash;
 
-mod users;
 mod db_connection;
-mod hash;
-mod env;
+mod utils;
+mod models;
 
-use crate::users::users::User;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(connection: State<DbConnection>, name: &str) -> String {
