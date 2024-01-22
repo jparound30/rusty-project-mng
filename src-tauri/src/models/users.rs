@@ -2,8 +2,8 @@ use rusqlite::{Connection, OptionalExtension, Result};
 
 #[derive(Debug)]
 pub struct User {
-    user_id: i32,
-    username: String,
+    pub user_id: u32,
+    pub username: String,
 }
 
 impl User {
@@ -20,7 +20,7 @@ impl User {
             (&new_user.username, password_hash, salt))?;
         println!("insert return: {:?}", inserted_row_cnt);
 
-        new_user.user_id = conn.last_insert_rowid() as i32;
+        new_user.user_id = conn.last_insert_rowid() as u32;
         Ok(new_user)
     }
 
@@ -65,17 +65,17 @@ pub fn show_all(connection: &Connection) -> Result<()> {
                     user_id: row.get(0)?,
                     username: row.get(1)?,
                 },
-                crate::models::authentications::UserAuthentication {
-                    password_hash: row.get(2)?,
-                    salt: row.get(3)?,
-                }
+                // crate::models::authentications::UserAuthentication {
+                //     password_hash: row.get(2)?,
+                //     salt: row.get(3)?,
+                // }
             )
         )
     })?;
 
     for user in user_iter {
-        let (u, ua) = user.unwrap();
-        println!("Found user {:?}, {:?}", u, ua);
+        let (u) = user.unwrap();
+        println!("Found user {:?}", u);
     }
     Ok(())
 }
