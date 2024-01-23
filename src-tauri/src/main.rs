@@ -71,8 +71,19 @@ fn main() {
     }
     show_dir(".env");
 
+    let db_connection = DbConnection::create();
+    {
+        let mutex_conn = db_connection.connection.lock().unwrap();
+        let conn = mutex_conn.as_ref().unwrap();
+        let _ = create_table(conn);
+        // user: user, password: pass でユーザを追加しておく（テスト用）
+        let password_hash = hash("pass".to_string());
+        println!("password_hash: [{:?}]", password_hash);
+        let test_result = User::add(conn, "user".to_string(), password_hash.0, password_hash.1);
+    }
+
     tauri::Builder::default()
-        .manage(DbConnection::create())
+        .manage(db_connection)
         .invoke_handler(tauri::generate_handler![greet, authenticate])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

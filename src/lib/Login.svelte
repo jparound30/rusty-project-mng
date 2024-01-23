@@ -14,12 +14,16 @@
     }
 </script>
 
+<svelte:head>
+  <title>ログイン</title>
+</svelte:head>
+
 <div>
-  <p>Login</p>
+  <p>ログイン</p>
   <form class="row" on:submit|preventDefault="{authenticate}">
     <input id="username-input" placeholder="Username" bind:value={username}/>
     <input id="password-input" placeholder="Password" type="password" bind:value={password}/>
-    <button type="submit">Login</button>
+    <button type="submit">ログイン</button>
   </form>
   <p>{msg}</p>
 </div>
