@@ -1,16 +1,26 @@
 <script lang="ts">
     import {invoke} from "@tauri-apps/api/tauri"
+    import {goto} from "$app/navigation";
 
     let username = ""
     let password = ""
     let msg = ""
 
     async function authenticate() {
-        invoke<{ user_id: string, username: string }>("authenticate", {
+        let authenticated = false;
+        await invoke<{ user_id: string, username: string }>("authenticate", {
             username,
             password
-        }).then(value => msg = "Login Successful:[" + value.username + "]").catch(reason => msg = reason)
-
+        }).then(value => {
+            console.log("認証成功")
+            authenticated = true
+            msg = "Login Successful:[" + value.username + "]"
+            goto('/home');
+        }).catch(reason => {
+            console.log("認証失敗")
+            console.error(reason)
+            msg = reason;
+        })
     }
 </script>
 
