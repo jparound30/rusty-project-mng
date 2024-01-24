@@ -7,18 +7,15 @@
     let msg = ""
 
     async function authenticate() {
-        let authenticated = false;
         await invoke<{ user_id: string, username: string }>("authenticate", {
             username,
             password
         }).then(value => {
             console.log("認証成功")
-            authenticated = true
             msg = "Login Successful:[" + value.username + "]"
             goto('/home');
         }).catch(reason => {
-            console.log("認証失敗")
-            console.error(reason)
+            console.error("認証失敗", reason)
             msg = reason;
         })
     }
