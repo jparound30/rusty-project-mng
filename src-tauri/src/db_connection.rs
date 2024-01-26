@@ -1,17 +1,22 @@
 pub mod db_connection {
-    use std::sync::Mutex;
-    use rusqlite::{Connection, OpenFlags};
+    use sqlx::{Pool, Sqlite};
+    use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 
     pub struct DbConnection {
-        pub connection: Mutex<Option<Connection>>,
+        // pub connection: Mutex<Option<Connection>>,
+        pub pool: Pool<Sqlite>,
     }
 
     impl DbConnection {
-        pub fn create() -> Self {
-            let open_flags = OpenFlags::SQLITE_OPEN_READ_WRITE | OpenFlags::SQLITE_OPEN_MEMORY | OpenFlags::SQLITE_OPEN_SHARED_CACHE;
-            let conn = Connection::open_in_memory_with_flags(open_flags).unwrap();
+        pub async fn create() -> Self {
+            let options = SqliteConnectOptions::new()
+                .filename("sample.db")
+                .create_if_missing(true);
+            let pool = SqlitePoolOptions::new()
+                .max_connections(5)
+                .connect_with(options).await.expect("接続不可"); // TODO どっかから持ってくる
             DbConnection {
-                connection: Mutex::new(Some(conn))
+                pool
             }
         }
     }

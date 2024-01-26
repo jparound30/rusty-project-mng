@@ -1,8 +1,8 @@
-use rusqlite::Connection;
+use sqlx::{Error, Executor};
 
 use crate::utils::hash::verify;
 
-#[derive(Debug)]
+#[derive(Debug, sqlx::FromRow)]
 struct UserAuthentication {
     user_id: i32,
     username: String,
@@ -10,29 +10,23 @@ struct UserAuthentication {
     salt: String,
 }
 
-pub fn authenticate(conn: &Connection, username: &str, password: &str) -> bool {
-    let mut stmt = conn.prepare("\
+pub async fn authenticate(conn: &mut sqlx::SqliteConnection, username: &str, password: &str) -> Result<bool, Error> {
+    let query_result = sqlx::query_as::<_, UserAuthentication>("\
                         SELECT user_id, username, password_hash, salt \
                         FROM users \
                         WHERE username = ?1
-                        ");
-    if stmt.is_err() {
-        return false;
-    }
-    let ret = stmt.unwrap().query_row([username], |row| {
-        Ok(
-            UserAuthentication {
-                user_id: row.get(0)?,
-                username: row.get(1)?,
-                password_hash: row.get(2)?,
-                salt: row.get(3)?,
-            }
-        )
-    });
-    if ret.is_err() {
-        return false;
+                        ")
+        .bind(username)
+        .fetch_optional(conn).await;
+    if query_result.is_err() {
+        return Err(query_result.err().unwrap());
     }
 
-    let user_authentication = ret.unwrap();
-    verify(password.to_string(), user_authentication.password_hash)
+    let userOption = query_result.unwrap();
+    if userOption.is_none() {
+        return Ok(false);
+    }
+
+    let user_authentication = userOption.unwrap();
+    Ok(verify(password.to_string(), user_authentication.password_hash))
 }

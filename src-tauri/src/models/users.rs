@@ -1,81 +1,62 @@
-use rusqlite::{Connection, OptionalExtension, Result};
+use sqlx::{Connection, Error};
 
-#[derive(Debug)]
+#[derive(Debug, sqlx::FromRow)]
 pub struct User {
     pub user_id: u32,
     pub username: String,
 }
 
 impl User {
-    pub fn add(conn: &Connection, username: String, password_hash: String, salt: String) -> Result<User> {
+    pub async fn add(conn: &mut sqlx::SqliteConnection, username: String, password_hash: String, salt: String) -> Result<User, Error> {
         let mut new_user = User {
             user_id: 0,
             username: username,
         };
-        let inserted_row_cnt = conn.execute(
+        let last_insert_rowid = sqlx::query(
             "INSERT INTO users \
                     (username, password_hash, salt)\
                  VALUES\
-                    (?1,?2, ?3)",
-            (&new_user.username, password_hash, salt))?;
-        println!("insert return: {:?}", inserted_row_cnt);
+                    (?1,?2, ?3)")
+            .bind(&new_user.username)
+            .bind(password_hash)
+            .bind(salt)
+            .execute(conn)
+            .await?
+            .last_insert_rowid();
 
-        new_user.user_id = conn.last_insert_rowid() as u32;
+        new_user.user_id = last_insert_rowid as u32;
         Ok(new_user)
     }
 
-    pub fn get(conn: &Connection, username: String) -> Result<Option<User>> {
-        let mut stmt = conn.prepare("\
-                        SELECT user_id, username, password_hash, salt \
+    pub async fn get(conn: &mut sqlx::SqliteConnection, username: String) -> Result<Option<User>, Error> {
+        let option = sqlx::query_as::<_, User>("\
+                        SELECT user_id, username \
                         FROM users \
                         WHERE username = ?1
-                        ")?;
-        let ret = stmt.query_row([username], |row| {
-            Ok(
-                User {
-                    user_id: row.get(0)?,
-                    username: row.get(1)?,
-                }
-            )
-        }).optional();
-        ret
+                        ")
+            .bind(username)
+            .fetch_optional(conn)
+            .await?;
+        Ok(option)
     }
 }
 
-pub fn create_table(connection: &Connection) -> Result<()> {
-    connection.execute(
-        "CREATE TABLE IF NOT EXISTS users (
-                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL,
-                password_hash TEXT,
-                salt TEXT
-            )",
-        (), )?;
-    Ok(())
+#[derive(Debug, sqlx::FromRow)]
+struct UserAndAuth {
+    user_id: i32,
+    username: String,
+    password_hash: String,
+    salt: String,
 }
 
-
 #[allow(dead_code)]
-pub fn show_all(connection: &Connection) -> Result<()> {
-    let mut stmt = connection.prepare("SELECT user_id, username, password_hash, salt FROM users")?;
-    let user_iter = stmt.query_map([], |row| {
-        Ok(
-            (
-                User {
-                    user_id: row.get(0)?,
-                    username: row.get(1)?,
-                },
-                // crate::models::authentications::UserAuthentication {
-                //     password_hash: row.get(2)?,
-                //     salt: row.get(3)?,
-                // }
-            )
-        )
-    })?;
+pub async fn show_all(conn: &mut sqlx::SqliteConnection) -> Result<(), Error> {
+    let users = sqlx::query_as::<_, UserAndAuth>("SELECT user_id, username, password_hash, salt FROM users")
+        .fetch_all(conn)
+        .await?;
 
-    for user in user_iter {
-        let (u) = user.unwrap();
-        println!("Found user {:?}", u);
+    for user in users {
+        println!("Found user {:?}", user);
     }
     Ok(())
 }
