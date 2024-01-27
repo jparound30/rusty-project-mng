@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
-use sqlx::{Acquire, Connection, Error, Executor};
+use sqlx::{Acquire, Error, Executor};
 use tauri::State;
 use crate::db_connection::db_connection::DbConnection;
 use crate::models::users::{User, show_all};
@@ -16,18 +16,18 @@ mod models;
 #[tauri::command]
 async fn greet(connection: State<'_, DbConnection>, name: &str) -> Result<String, String> {
 
-    let transactionResult =  connection.pool.begin().await;
-    if transactionResult.is_err() {
-        return Err(transactionResult.err().unwrap().to_string())
+    let transaction_result =  connection.pool.begin().await;
+    if transaction_result.is_err() {
+        return Err(transaction_result.err().unwrap().to_string())
     }
 
-    let mut transaction = transactionResult.unwrap();
-    let connResult = transaction.acquire().await;
-    if connResult.is_err() {
-        return Err(connResult.err().unwrap().to_string())
+    let mut transaction = transaction_result.unwrap();
+    let conn_result = transaction.acquire().await;
+    if conn_result.is_err() {
+        return Err(conn_result.err().unwrap().to_string())
     }
 
-    let conn = connResult.ok().unwrap();
+    let conn = conn_result.ok().unwrap();
     let _ = create_table(conn);
     let password_hash = hash(name.to_string());
     println!("password_hash: [{:?}]", password_hash);
@@ -53,24 +53,24 @@ struct UserMsg {
 #[tauri::command]
 async fn authenticate(connection: State<'_, DbConnection>, username: &str, password: &str) -> Result<UserMsg, String> {
 
-    let transactionResult =  connection.pool.begin().await;
-    if transactionResult.is_err() {
-        return Err(transactionResult.err().unwrap().to_string())
+    let transaction_result =  connection.pool.begin().await;
+    if transaction_result.is_err() {
+        return Err(transaction_result.err().unwrap().to_string())
     }
 
-    let mut transaction = transactionResult.unwrap();
-    let connResult = transaction.acquire().await;
-    if connResult.is_err() {
-        return Err(connResult.err().unwrap().to_string())
+    let mut transaction = transaction_result.unwrap();
+    let conn_result = transaction.acquire().await;
+    if conn_result.is_err() {
+        return Err(conn_result.err().unwrap().to_string())
     }
 
-    let conn = connResult.ok().unwrap();
+    let conn = conn_result.ok().unwrap();
 
     let result_auth = models::authentications::authenticate(conn, username, password).await;
 
     match result_auth {
-        Ok(isAuth) => {
-            if isAuth {
+        Ok(is_authenticated) => {
+            if is_authenticated {
                 let user = User::get(conn, username.to_string()).await.unwrap().unwrap();
                 Ok(UserMsg {
                     user_id: user.user_id,
@@ -117,7 +117,7 @@ async fn main() {
         // user: user, password: pass でユーザを追加しておく（テスト用）
         let password_hash = hash("pass".to_string());
         println!("password_hash: [{:?}]", password_hash);
-        let test_result = User::add(conn, "user".to_string(), password_hash.0, password_hash.1).await;
+        let _ = User::add(conn, "user".to_string(), password_hash.0, password_hash.1).await;
     }
 
     tauri::Builder::default()

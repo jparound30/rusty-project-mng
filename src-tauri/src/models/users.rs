@@ -1,4 +1,4 @@
-use sqlx::{Connection, Error};
+use sqlx::Error;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct User {
@@ -41,6 +41,7 @@ impl User {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug, sqlx::FromRow)]
 struct UserAndAuth {
     user_id: i32,

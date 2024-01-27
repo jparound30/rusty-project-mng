@@ -1,7 +1,8 @@
-use sqlx::{Error, Executor};
+use sqlx::Error;
 
 use crate::utils::hash::verify;
 
+#[allow(dead_code)]
 #[derive(Debug, sqlx::FromRow)]
 struct UserAuthentication {
     user_id: i32,
@@ -22,11 +23,11 @@ pub async fn authenticate(conn: &mut sqlx::SqliteConnection, username: &str, pas
         return Err(query_result.err().unwrap());
     }
 
-    let userOption = query_result.unwrap();
-    if userOption.is_none() {
+    let user_option = query_result.unwrap();
+    if user_option.is_none() {
         return Ok(false);
     }
 
-    let user_authentication = userOption.unwrap();
+    let user_authentication = user_option.unwrap();
     Ok(verify(password.to_string(), user_authentication.password_hash))
 }
