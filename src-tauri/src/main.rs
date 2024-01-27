@@ -1,7 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use serde::{Deserialize, Serialize};
 use sqlx::{Acquire, Error, Executor};
 use tauri::State;
 use crate::db_connection::db_connection::DbConnection;
@@ -11,6 +10,7 @@ use crate::utils::hash::hash;
 mod db_connection;
 mod utils;
 mod models;
+mod apis;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -41,47 +41,6 @@ async fn greet(connection: State<'_, DbConnection>, name: &str) -> Result<String
         }
         Err(_) => {
             Err("追加エラー".to_string())
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct UserMsg {
-    user_id: u32,
-    username: String,
-}
-#[tauri::command]
-async fn authenticate(connection: State<'_, DbConnection>, username: &str, password: &str) -> Result<UserMsg, String> {
-
-    let transaction_result =  connection.pool.begin().await;
-    if transaction_result.is_err() {
-        return Err(transaction_result.err().unwrap().to_string())
-    }
-
-    let mut transaction = transaction_result.unwrap();
-    let conn_result = transaction.acquire().await;
-    if conn_result.is_err() {
-        return Err(conn_result.err().unwrap().to_string())
-    }
-
-    let conn = conn_result.ok().unwrap();
-
-    let result_auth = models::authentications::authenticate(conn, username, password).await;
-
-    match result_auth {
-        Ok(is_authenticated) => {
-            if is_authenticated {
-                let user = User::get(conn, username.to_string()).await.unwrap().unwrap();
-                Ok(UserMsg {
-                    user_id: user.user_id,
-                    username: user.username,
-                })
-            } else {
-                Err(format!("{}", "認証エラー:ユーザ名パスワード誤り".to_string()))
-            }
-        }
-        Err(err) => {
-            Err(format!("{}{}", "認証エラー:".to_string(), err.to_string()))
         }
     }
 }
@@ -122,7 +81,10 @@ async fn main() {
 
     tauri::Builder::default()
         .manage(db_connection)
-        .invoke_handler(tauri::generate_handler![greet, authenticate])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            crate::apis::authentication::authenticate,
+            crate::apis::tasks::task_add])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
