@@ -2,7 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use sqlx::Acquire;
-use tauri::State;
+use tauri::{Manager, Menu, State, StateManager};
+use tauri::async_runtime::block_on;
 
 use crate::db_connection::db_connection::DbConnection;
 use crate::models::users::{show_all, User};
@@ -61,7 +62,25 @@ async fn main() {
     // DBマイグレーション?
     // sqlx::migrate!().run(&db_connection.pool).await?;
 
-    tauri::Builder::default()
+    let menu = Menu::new(); // configure the menu
+
+    let app = tauri::Builder::default()
+        .menu(menu)
+        .on_menu_event(|event| {
+            match event.menu_item_id() {
+                "quit" => {
+                    println!("menu:quit");
+                    std::process::exit(0);
+                }
+                "close" => {
+                    println!("menu:close");
+                    event.window().close().unwrap();
+                }
+                t => {
+                    println!("menu: {:?}", t);
+                }
+            }
+        })
         .manage(db_connection)
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -69,6 +88,21 @@ async fn main() {
             crate::apis::tasks::task_add,
             crate::apis::task_status::task_status_list
         ])
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
+        // .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    app.run(|_app_handle, event| match event {
+        tauri::RunEvent::ExitRequested { api, .. } => {
+            println!("on_window_event:Destroyed");
+            let db_connection = _app_handle.state::<DbConnection>();
+            tokio::task::block_in_place(|| {
+                block_on(async {
+                    let _ = db_connection.pool.close().await;
+                    println!("db closed.");
+                })
+            });
+        }
+        _ => {}
+    });
 }
