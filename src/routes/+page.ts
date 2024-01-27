@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
-/** @type {import('./$types').PageServerLoad} */
+/** @type {import('./$types').PageLoad} */
 export function load({ params }) {
     // TODO キャッシュなどから認証状態を復元したりする
     // TODO とりあえず必ず /login に飛ばす

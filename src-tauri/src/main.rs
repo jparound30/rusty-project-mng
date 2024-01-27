@@ -1,10 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use sqlx::{Acquire, Error, Executor};
+use sqlx::Acquire;
 use tauri::State;
+
 use crate::db_connection::db_connection::DbConnection;
-use crate::models::users::{User, show_all};
+use crate::models::users::{show_all, User};
 use crate::utils::hash::hash;
 
 mod db_connection;
@@ -65,7 +66,9 @@ async fn main() {
         .invoke_handler(tauri::generate_handler![
             greet,
             crate::apis::authentication::authenticate,
-            crate::apis::tasks::task_add])
+            crate::apis::tasks::task_add,
+            crate::apis::task_status::task_status_list
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
