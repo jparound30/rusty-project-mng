@@ -28,7 +28,6 @@ async fn greet(connection: State<'_, DbConnection>, name: &str) -> Result<String
     }
 
     let conn = conn_result.ok().unwrap();
-    let _ = create_table(conn);
     let password_hash = hash(name.to_string());
     println!("password_hash: [{:?}]", password_hash);
     let test_result = User::add(conn, name.to_string(), password_hash.0, password_hash.1).await;
@@ -45,18 +44,6 @@ async fn greet(connection: State<'_, DbConnection>, name: &str) -> Result<String
     }
 }
 
-pub async fn create_table(conn:  &mut sqlx::SqliteConnection) -> Result<(), Error> {
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS users (
-                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL,
-                password_hash TEXT,
-                salt TEXT
-            )",
-        ).await?;
-    Ok(())
-}
-
 #[tokio::main]
 async fn main() {
     fn show_dir(relative_path: &str) {
@@ -69,15 +56,9 @@ async fn main() {
     show_dir(".env");
 
     let db_connection = DbConnection::create().await;
-    {
-        let mut poo_conn = db_connection.pool.acquire().await.expect("pool fail");
-        let conn = poo_conn.acquire().await.expect("pool.acquire");
-        let _ = create_table(conn).await;
-        // user: user, password: pass でユーザを追加しておく（テスト用）
-        let password_hash = hash("pass".to_string());
-        println!("password_hash: [{:?}]", password_hash);
-        let _ = User::add(conn, "user".to_string(), password_hash.0, password_hash.1).await;
-    }
+
+    // DBマイグレーション?
+    // sqlx::migrate!().run(&db_connection.pool).await?;
 
     tauri::Builder::default()
         .manage(db_connection)
