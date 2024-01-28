@@ -40,17 +40,26 @@ VALUES (1, '未着手', 1000, 0)
 
 CREATE TABLE tasks
 (
-    task_id          INTEGER PRIMARY KEY,
-    title            TEXT    NOT NULL,
-    description      TEXT,
-    assignee_user_id INTEGER,
-    parent_task_id   INTEGER,
-    start_date       TEXT,
-    due_date         TEXT,
-    task_status_id   INTEGER NOT NULL,
-    progress_rate    INTEGER NOT NULL,
-    FOREIGN KEY (assignee_user_id) REFERENCES users (user_id),
+    task_id              INTEGER PRIMARY KEY,
+    title                TEXT    NOT NULL,
+    description          TEXT,
+    assignee_resource_id INTEGER,
+    parent_task_id       INTEGER,
+    start_date           TEXT,
+    due_date             TEXT,
+    estimated_time       INTEGER,
+    actual_time          INTEGER,
+    planed_value         INTEGER,
+    task_status_id       INTEGER NOT NULL,
+    progress_rate        INTEGER NOT NULL,
+    FOREIGN KEY (assignee_resource_id) REFERENCES resources (resource_id),
     FOREIGN KEY (parent_task_id) REFERENCES tasks (task_id),
     FOREIGN KEY (task_status_id) REFERENCES task_status (task_status_id)
 );
 
+CREATE TABLE resources
+(
+    resource_id    INTEGER PRIMARY KEY,
+    name           TEXT    NOT NULL,
+    cost_per_month INTEGER NOT NULL
+)
