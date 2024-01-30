@@ -1,9 +1,14 @@
-<nav>
-  <a href="/home">ホーム</a>
-  <a href="/tasks">タスク一覧</a>
-  <a href="/resources">リソース一覧</a>
-  <a href="/configs/task-types">タスク種別</a>
-  <a href="/configs/milestones">マイルストーン一覧</a>
+<script lang="ts">
+  import LinkButton from "$lib/LinkButton.svelte";
+</script>
+
+<nav class="flex items-center text-l line-clamp-1 px-2 py-2">
+  <ul>
+    <li class="inline-block px-1"><LinkButton name={"ホーム"} url={"/home"} /></li>
+    <li class="inline-block px-1"><LinkButton name={"タスク一覧"} url={"/tasks"} /></li>
+    <li class="inline-block px-1"><LinkButton name={"タスク種別"} url={"/configs/task-types"} /></li>
+    <li class="inline-block px-1"><LinkButton name={"マイルストーン一覧"} url={"/configs/milestones"} /></li>
+  </ul>
 </nav>
 
 <slot></slot>
