@@ -30,27 +30,38 @@ CREATE TABLE task_status
 -- タスクステータス初期値
 INSERT INTO task_status
     (task_status_id, title, view_order, progress_rate)
-VALUES (1, '未着手', 1000, 0)
-     , (2, '対応中', 2000, 10)
-     , (3, 'レビュー中', 3000, 80)
-     , (4, 'レビュー対応中', 4000, 90)
-     , (5, '対応済', 5000, 100)
-     , (6, '完了', 6000, 100)
+VALUES (0, '未着手', 1000, 0)
+     , (1, '作業中', 2000, 10)
+     , (2, 'レビュー中', 3000, 80)
+     , (3, 'レビュー指摘対応中', 4000, 90)
+     , (4, '対応済', 5000, 100)
+     , (5, '完了', 6000, 100)
 ;
 
 CREATE TABLE tasks
 (
     task_id              INTEGER PRIMARY KEY,
+    -- タスク名
     title                TEXT    NOT NULL,
+    -- 詳細
     description          TEXT,
+    -- 担当者ID
     assignee_resource_id INTEGER,
+    -- 親タスクID
     parent_task_id       INTEGER,
+    -- 開始日
     start_date           TEXT,
+    -- 期限日
     due_date             TEXT,
+    -- 予定工数
     estimated_time       INTEGER,
+    -- 実工数
     actual_time          INTEGER,
+    -- 計画予算
     planed_value         INTEGER,
+    -- タスクステータスID
     task_status_id       INTEGER NOT NULL,
+    -- 作業進捗率
     progress_rate        INTEGER NOT NULL,
     FOREIGN KEY (assignee_resource_id) REFERENCES resources (resource_id),
     FOREIGN KEY (parent_task_id) REFERENCES tasks (task_id),
