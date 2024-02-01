@@ -86,7 +86,8 @@ async fn main() {
             greet,
             crate::apis::authentication::authenticate,
             crate::apis::tasks::task_add,
-            crate::apis::task_status::task_status_list
+            crate::apis::task_status::task_status_list,
+            crate::apis::resources::resources_list,
         ])
         .build(tauri::generate_context!())
         // .run(tauri::generate_context!())

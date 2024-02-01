@@ -9,6 +9,6 @@
     }
     /* フォームのラベル用のクラス */
     .form-label {
-        @apply text-black font-semibold before:content-['['] after:content-[']']
+        @apply text-black font-semibold before:content-['■'] after:content-['']
     }
 }

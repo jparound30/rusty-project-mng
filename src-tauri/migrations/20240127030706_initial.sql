@@ -68,9 +68,20 @@ CREATE TABLE tasks
     FOREIGN KEY (task_status_id) REFERENCES task_status (task_status_id)
 );
 
+-- リソース
 CREATE TABLE resources
 (
     resource_id    INTEGER PRIMARY KEY,
     name           TEXT    NOT NULL,
     cost_per_month INTEGER NOT NULL
-)
+);
+
+INSERT INTO resources
+(resource_id, name, cost_per_month)
+VALUES (0, 'Aさん', 100000)
+     , (1, 'Bさん', 200000)
+     , (2, 'Cさん', 300000)
+     , (3, 'Dさん', 400000)
+     , (4, 'Eさん', 500000)
+     , (5, 'Fさん', 600000)
+;
