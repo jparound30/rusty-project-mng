@@ -70,10 +70,14 @@
    </div>
     <div class="flex flex-row py-2">
       <label for="parent_task_id" class="form-label basis-48">親タスク</label>
-      <input type="number" id="parent_task_id" name="parent_task_id" class="basis-full" bind:value={parentTaskId}>
+      <select id="parent_task_id" name="parent_task_id" class="basis-full" required bind:value={parentTaskId}>
+        <option value="{null}"></option>
+        {#each data.task_simple_list as item (item.task_id)}
+          <option value="{item.task_id}">{item.title}</option>
+        {/each}
+      </select>
     </div>
     <div class="flex flex-row py-2">
-      <!-- TODO 全タスクのリストからselect生成 絞り込み可能なやつ -->
       <label for="start_date" class="form-label basis-48">開始日</label>
       <input type="date" id="start_date" name="start_date" class="basis-full" bind:value={startDate}>
     </div>
@@ -99,7 +103,7 @@
         {#each data.task_status_list as item (item.task_status_id)}
           <option value="{item.task_status_id}">{item.title}</option>
         {/each}
-      </select><br/>
+      </select>
     </div>
     <div class="flex flex-row py-2">
       <label for="progress_rate" class="form-label basis-48">作業進捗度合[%]</label>

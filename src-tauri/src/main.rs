@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use sqlx::Acquire;
-use tauri::{Manager, Menu, State, StateManager};
+use tauri::{Manager, Menu, State};
 use tauri::async_runtime::block_on;
 
 use crate::db_connection::db_connection::DbConnection;
@@ -88,12 +88,15 @@ async fn main() {
             crate::apis::tasks::task_add,
             crate::apis::task_status::task_status_list,
             crate::apis::resources::resources_list,
+            crate::apis::tasks::task_all,
+            crate::apis::tasks::task_simple_all,
         ])
         .build(tauri::generate_context!())
         // .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
     app.run(|_app_handle, event| match event {
+        #[allow(unused_variables)]
         tauri::RunEvent::ExitRequested { api, .. } => {
             println!("on_window_event:Destroyed");
             let db_connection = _app_handle.state::<DbConnection>();

@@ -1,13 +1,14 @@
-use sqlx::{Acquire, Error};
+use sqlx::Acquire;
 use tauri::State;
 use crate::db_connection::db_connection::DbConnection;
-use crate::models::tasks::Task;
+use crate::models;
+use crate::models::tasks::{Task, TaskSimple};
 
 #[tauri::command]
-pub async fn task_add(connection: State<'_, DbConnection>, title: &str, description: Option<&str>, assignee_resource_id: Option<u32>,
-                      parent_task_id: Option<u32>, start_date: Option<String>, due_date: Option<String>,
-                      estimated_time: Option<u32>, actual_time: Option<u32>, planned_value: Option<u32>,
-                      task_status_id: u32, progress_rate: u32) -> Result<String, String> {
+pub async fn task_add(connection: State<'_, DbConnection>, title: &str, description: Option<&str>, assignee_resource_id: Option<i64>,
+                      parent_task_id: Option<i64>, start_date: Option<String>, due_date: Option<String>,
+                      estimated_time: Option<i64>, actual_time: Option<i64>, planned_value: Option<i64>,
+                      task_status_id: i64, progress_rate: i64) -> Result<String, String> {
     let transaction_result = connection.pool.begin().await;
     if transaction_result.is_err() {
         return Err(transaction_result.err().unwrap().to_string());
@@ -26,7 +27,7 @@ pub async fn task_add(connection: State<'_, DbConnection>, title: &str, descript
     println!("task_status_id:{:?}", task_status_id);
     println!("progress_rate:{:?}", progress_rate);
 
-    let newTask = Task {
+    let new_task = Task {
         task_id: 0,
         title: title.to_string(),
         description: if description.is_none() { None } else {Some(description.unwrap().to_string())},
@@ -41,15 +42,63 @@ pub async fn task_add(connection: State<'_, DbConnection>, title: &str, descript
         progress_rate: progress_rate,
     };
 
-    let result_task_add = newTask.add(conn).await;
+    let result_task_add = new_task.add(conn).await;
     match result_task_add {
-        Ok(m) => {
-            transaction.commit().await;
+        Ok(_) => {
+            let _ = transaction.commit().await;
             Ok("成功だよTODO".to_string())
         }
         Err(_) => {
-            transaction.rollback().await;
+            let _ = transaction.rollback().await;
             Ok("失敗だよTODO".to_string())
         }
+    }
+}
+
+#[tauri::command]
+pub async fn task_all(connection: State<'_, DbConnection>) -> Result<Vec<Task>, String> {
+
+    let transaction_result =  connection.pool.begin().await;
+    if transaction_result.is_err() {
+        return Err(transaction_result.err().unwrap().to_string())
+    }
+
+    let mut transaction = transaction_result.unwrap();
+    let conn_result = transaction.acquire().await;
+    if conn_result.is_err() {
+        return Err(conn_result.err().unwrap().to_string())
+    }
+
+    let conn = conn_result.ok().unwrap();
+
+    let task_list = models::tasks::Task::all(conn).await;
+
+    match task_list {
+        Ok(list) => {Ok(list)}
+        Err(err) => {Err(err.to_string())}
+    }
+}
+
+#[tauri::command]
+pub async fn task_simple_all(connection: State<'_, DbConnection>) -> Result<Vec<TaskSimple>, String> {
+
+    let transaction_result =  connection.pool.begin().await;
+    if transaction_result.is_err() {
+        return Err(transaction_result.err().unwrap().to_string())
+    }
+
+    let mut transaction = transaction_result.unwrap();
+    let conn_result = transaction.acquire().await;
+    if conn_result.is_err() {
+        return Err(conn_result.err().unwrap().to_string())
+    }
+
+    let conn = conn_result.ok().unwrap();
+
+    let task_simple_list = models::tasks::Task::all_with_id_and_title(conn).await;
+
+    match task_simple_list {
+        Ok(list) => {Ok(list)}
+        Err(err) => {Err(err.to_string())}
     }
 }
