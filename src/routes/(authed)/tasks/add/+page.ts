@@ -1,4 +1,4 @@
-import {invoke} from "@tauri-apps/api/tauri";
+import {invoke} from "@tauri-apps/api/core";
 
 /** @type {import('./$types').PageLoad} */
 export async function load({params}) {
@@ -23,7 +23,7 @@ export async function load({params}) {
             })
 
     let task_simple_list =
-        await invoke<{task_id: number, title: string}>("task_simple_all", {})
+        await invoke<{task_id: number, title: string}[]>("task_simple_all", {})
             .then(value => {
                 console.log("タスク（idとタイトルのみ）一覧取得成功")
                 return value

@@ -7,7 +7,7 @@
 
 <div class="p-4">
   <h1 class="text-2xl underline underline-offset-4">タスク一覧</h1>
-  <button class="btn-primary rounded-3xl font-bold my-2"><a href="/tasks/add">+</a></button>
+  <a href="/tasks/add"><button class="btn-primary rounded-3xl font-bold my-2">+</button></a>
 
   <div class="table-auto">
     <table>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {invoke} from "@tauri-apps/api/tauri"
+    import {invoke} from "@tauri-apps/api/core"
     import {goto} from "$app/navigation"
     import type {PageData} from './$types'
 
@@ -70,7 +70,7 @@
    </div>
     <div class="flex flex-row py-2">
       <label for="parent_task_id" class="form-label basis-48">親タスク</label>
-      <select id="parent_task_id" name="parent_task_id" class="basis-full" required bind:value={parentTaskId}>
+      <select id="parent_task_id" name="parent_task_id" class="basis-full" bind:value={parentTaskId}>
         <option value="{null}"></option>
         {#each data.task_simple_list as item (item.task_id)}
           <option value="{item.task_id}">{item.title}</option>

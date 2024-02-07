@@ -11,13 +11,13 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.5.2"
+    "@tauri-apps/api": "^2.0.0-beta.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.1",
     "@sveltejs/kit": "^2.4.3",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
-    "@tauri-apps/cli": "^1.5.8",
+    "@tauri-apps/cli": "2.0.0-beta.1",
     "@tsconfig/svelte": "^5.0.2",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.33",

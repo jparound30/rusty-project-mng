@@ -1,10 +1,8 @@
 <script>
-    import { appWindow, LogicalSize } from '@tauri-apps/api/window';
     import {onMount} from "svelte";
 
     onMount(() => {
         console.log("onMount called")
-        appWindow.setSize(new LogicalSize(1200, 500));
     })
 </script>
 
