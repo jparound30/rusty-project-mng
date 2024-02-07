@@ -88,7 +88,7 @@ async fn main() {
             crate::apis::tasks::task_add,
             crate::apis::task_status::task_status_list,
             crate::apis::resources::resources_list,
-            crate::apis::tasks::task_all,
+            crate::apis::tasks::task_all_full,
             crate::apis::tasks::task_simple_all,
         ])
         .build(tauri::generate_context!())

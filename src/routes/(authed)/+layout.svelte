@@ -1,5 +1,11 @@
 <script lang="ts">
   import LinkButton from "$lib/LinkButton.svelte";
+  import {onMount} from "svelte";
+
+  onMount(() => {
+      console.log("onMount called")
+  })
+
 </script>
 
 <nav class="flex items-center text-l line-clamp-1 px-2 py-2">

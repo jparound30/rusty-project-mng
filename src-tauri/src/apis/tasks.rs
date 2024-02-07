@@ -2,7 +2,7 @@ use sqlx::Acquire;
 use tauri::State;
 use crate::db_connection::db_connection::DbConnection;
 use crate::models;
-use crate::models::tasks::{Task, TaskSimple};
+use crate::models::tasks::{Task, TaskFull, TaskSimple};
 
 #[tauri::command]
 pub async fn task_add(connection: State<'_, DbConnection>, title: &str, description: Option<&str>, assignee_resource_id: Option<i64>,
@@ -56,7 +56,7 @@ pub async fn task_add(connection: State<'_, DbConnection>, title: &str, descript
 }
 
 #[tauri::command]
-pub async fn task_all(connection: State<'_, DbConnection>) -> Result<Vec<Task>, String> {
+pub async fn task_all_full(connection: State<'_, DbConnection>) -> Result<Vec<TaskFull>, String> {
 
     let transaction_result =  connection.pool.begin().await;
     if transaction_result.is_err() {
@@ -73,6 +73,7 @@ pub async fn task_all(connection: State<'_, DbConnection>) -> Result<Vec<Task>, 
 
     let task_list = models::tasks::Task::all(conn).await;
 
+    println!("task_all_full: count{:?}", task_list);
     match task_list {
         Ok(list) => {Ok(list)}
         Err(err) => {Err(err.to_string())}

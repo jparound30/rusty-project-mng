@@ -18,6 +18,25 @@ pub struct Task {
 }
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
+pub struct TaskFull {
+    pub task_id: i64,
+    pub title: String,
+    pub description: Option<String>,
+    pub assignee_resource_id: Option<i64>,
+    pub assignee_resource_name: Option<String>,
+    pub parent_task_id: Option<i64>,
+    pub parent_task_title: Option<String>,
+    pub start_date: Option<String>,
+    pub due_date: Option<String>,
+    pub estimated_time: Option<i64>,
+    pub actual_time: Option<i64>,
+    pub planed_value: Option<i64>,
+    pub task_status_id: i64,
+    pub task_status_name: String,
+    pub progress_rate: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct TaskSimple {
     pub task_id: i64,
     pub title: String,
@@ -61,8 +80,8 @@ impl Task {
         Ok(option)
     }
 
-    pub async fn all(conn: &mut sqlx::SqliteConnection) -> Result<Vec<Task>, Error> {
-        let option = sqlx::query_file_as!(Task, "sqls/tasks/all.sql")
+    pub async fn all(conn: &mut sqlx::SqliteConnection) -> Result<Vec<TaskFull>, Error> {
+        let option = sqlx::query_file_as!(TaskFull, "sqls/tasks/all_full.sql")
             .fetch_all(conn)
             .await?;
         Ok(option)

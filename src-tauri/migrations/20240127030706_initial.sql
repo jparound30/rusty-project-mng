@@ -77,11 +77,28 @@ CREATE TABLE resources
 );
 
 INSERT INTO resources
-(resource_id, name, cost_per_month)
+    (resource_id, name, cost_per_month)
 VALUES (0, 'Aさん', 100000)
      , (1, 'Bさん', 200000)
      , (2, 'Cさん', 300000)
      , (3, 'Dさん', 400000)
      , (4, 'Eさん', 500000)
      , (5, 'Fさん', 600000)
+;
+
+-- タスク種別
+CREATE TABLE task_types
+(
+    task_type_id INTEGER PRIMARY KEY,
+    name         TEXT NOT NULL
+);
+
+INSERT INTO task_types
+    (task_type_id, name)
+VALUES (1, 'タスク'),
+       (2, 'バグ'),
+       (3, 'レビュー'),
+       (4, '打合せ'),
+       (5, 'QMS'),
+       (99, 'その他')
 ;
