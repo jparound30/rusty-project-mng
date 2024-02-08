@@ -58,7 +58,7 @@ CREATE TABLE tasks
     -- 実工数
     actual_time          INTEGER,
     -- 計画予算
-    planed_value         INTEGER,
+    planned_value         INTEGER,
     -- タスクステータスID
     task_status_id       INTEGER NOT NULL,
     -- 作業進捗率

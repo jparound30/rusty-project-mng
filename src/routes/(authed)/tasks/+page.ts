@@ -1,27 +1,12 @@
 import {invoke} from "@tauri-apps/api/core";
+import type {Resource} from "$components/Resource";
+import type {TaskFull} from "$components/TaskFull";
 
-class TaskFull {
-    task_id: number = 0;
-    title: string = "";
-    description: string | null = null;
-    assignee_resource_id: number | null = null;
-    assignee_resource_name: string | null = null;
-    parent_task_id: number | null = null;
-    parent_task_title: string | null = null;
-    start_date: string | null = null;
-    due_date: string | null = null;
-    estimated_time: number | null = null;
-    actual_time: number | null = null;
-    planed_value: number | null = null;
-    task_status_id: number = 0;
-    task_status_name: String = "";
-    progress_rate: number = 0;
-}
 
 /** @type {import('./$types').PageLoad} */
 export async function load({params}) {
-    let task_list =
-        await invoke<TaskFull[]>("task_all_full", {})
+    let task_list_p =
+        invoke<TaskFull[]>("task_all_full", {})
             .then(value => {
                 console.log("タスク（idとタイトルのみ）一覧取得成功")
                 return value
@@ -30,7 +15,20 @@ export async function load({params}) {
                 return [] as TaskFull[];
             })
 
+    let resources_list_p =
+        invoke<Resource[]>("resources_list", {})
+            .then(value => {
+                console.log("リソース一覧取得成功")
+                return value
+            }).catch(reason => {
+                console.error("リソース一覧取得失敗", reason)
+                return [] as Resource[];
+            })
+
+
+    const ret = await Promise.all([task_list_p, resources_list_p]);
     return {
-        task_list,
+        task_list : ret[0],
+        resources_list: ret[1],
     }
 }

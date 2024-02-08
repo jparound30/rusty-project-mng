@@ -12,7 +12,7 @@ pub struct Task {
     pub due_date: Option<String>,
     pub estimated_time: Option<i64>,
     pub actual_time: Option<i64>,
-    pub planed_value: Option<i64>,
+    pub planned_value: Option<i64>,
     pub task_status_id: i64,
     pub progress_rate: i64,
 }
@@ -30,7 +30,7 @@ pub struct TaskFull {
     pub due_date: Option<String>,
     pub estimated_time: Option<i64>,
     pub actual_time: Option<i64>,
-    pub planed_value: Option<i64>,
+    pub planned_value: Option<i64>,
     pub task_status_id: i64,
     pub task_status_name: String,
     pub progress_rate: i64,
@@ -46,7 +46,7 @@ impl Task {
     pub async fn add(mut self: Self, conn: &mut sqlx::SqliteConnection) -> Result<(), Error> {
         let last_insert_rowid = sqlx::query(
             "INSERT INTO tasks \
-                    (title, description, assignee_resource_id, parent_task_id, start_date, due_date, estimated_time, actual_time, planed_value, task_status_id, progress_rate)\
+                    (title, description, assignee_resource_id, parent_task_id, start_date, due_date, estimated_time, actual_time, planned_value, task_status_id, progress_rate)\
                  VALUES\
                     (?1,?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)")
             .bind(self.title)
@@ -57,7 +57,7 @@ impl Task {
             .bind(self.due_date)
             .bind(self.estimated_time)
             .bind(self.actual_time)
-            .bind(self.planed_value)
+            .bind(self.planned_value)
             .bind(self.task_status_id)
             .bind(self.progress_rate)
             .execute(conn)
@@ -70,7 +70,7 @@ impl Task {
 
     pub async fn get(conn: &mut sqlx::SqliteConnection, task_id: i64) -> Result<Option<Task>, Error> {
         let option = sqlx::query_as::<_, Task>("\
-                        SELECT task_id, title, description, assignee_resource_id, parent_task_id, start_date, due_date, estimated_time, actual_time, planed_value, task_status_id, progress_rate\
+                        SELECT task_id, title, description, assignee_resource_id, parent_task_id, start_date, due_date, estimated_time, actual_time, planned_value, task_status_id, progress_rate\
                         FROM tasks \
                         WHERE task_id = ?1
                         ")

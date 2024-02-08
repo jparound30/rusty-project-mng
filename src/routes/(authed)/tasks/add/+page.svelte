@@ -14,14 +14,14 @@
     let dueDate: null | string = null
     let estimatedTime: null | number = null
     let actualTime: null | number = null
-    let planedValue: null | number = null
+    let plannedValue: null | number = null
     let taskStatusId: 0  //未着手のtask_status_id
     let progressRate = 0
     let msg = ""
     $: if (assigneeResourceId != null && estimatedTime != null) {
         const resource = data.resources_list.find(v => v.resource_id == assigneeResourceId)
         if (resource !== undefined) {
-            planedValue = estimatedTime * resource.cost_per_month / 160
+            plannedValue = estimatedTime * resource.cost_per_month / 160
         }
     }
 
@@ -35,7 +35,7 @@
             dueDate,
             estimatedTime,
             actualTime,
-            planedValue,
+            plannedValue,
             taskStatusId,
             progressRate,
         }).then(value => {
@@ -95,7 +95,7 @@
     </div>
     <div class="flex flex-row py-2">
       <label for="planed_value" class="form-label basis-48">計画予算[\]</label>
-      <input type="number" id="planed_value" name="planed_value" class="basis-full" bind:value={planedValue}>
+      <input type="number" id="planed_value" name="planed_value" class="basis-full" bind:value={plannedValue}>
     </div>
     <div class="flex flex-row py-2">
       <label for="task_status_id" class="form-label basis-48">状態</label>

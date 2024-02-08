@@ -9,7 +9,7 @@ SELECT t.task_id as task_id,
        t.due_date as due_date,
        t.estimated_time as estimated_time,
        t.actual_time as actual_time,
-       t.planed_value as planed_value,
+       t.planned_value as planned_value,
        t.task_status_id as task_status_id,
        ts.title as task_status_name,
        t.progress_rate as progress_rate

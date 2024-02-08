@@ -1,4 +1,5 @@
 import {invoke} from "@tauri-apps/api/core";
+import type {Resource} from "$components/Resource";
 
 /** @type {import('./$types').PageLoad} */
 export async function load({params}) {
@@ -13,7 +14,7 @@ export async function load({params}) {
             })
 
     let resources_list =
-        await invoke<{ resource_id: number, name: string, cost_per_month: number }[]>("resources_list", {})
+        await invoke<Resource[]>("resources_list", {})
             .then(value => {
                 console.log("リソース一覧取得成功")
                 return value

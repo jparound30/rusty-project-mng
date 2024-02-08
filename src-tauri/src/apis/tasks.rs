@@ -26,6 +26,7 @@ pub async fn task_add(connection: State<'_, DbConnection>, title: &str, descript
     println!("assignee_resource_id:{:?}", assignee_resource_id);
     println!("task_status_id:{:?}", task_status_id);
     println!("progress_rate:{:?}", progress_rate);
+    println!("planned_value:{:?}", planned_value);
 
     let new_task = Task {
         task_id: 0,
@@ -37,7 +38,7 @@ pub async fn task_add(connection: State<'_, DbConnection>, title: &str, descript
         due_date: due_date,
         estimated_time: estimated_time,
         actual_time: actual_time,
-        planed_value: planned_value,
+        planned_value: planned_value,
         task_status_id: task_status_id,
         progress_rate: progress_rate,
     };
