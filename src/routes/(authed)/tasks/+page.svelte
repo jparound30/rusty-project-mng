@@ -23,8 +23,8 @@
         <th class="border-2 px-1 py-1 text-left">期限日</th>
         <th class="border-2 px-1 py-1 text-left">予定工数[H]</th>
         <th class="border-2 px-1 py-1 text-left">実工数[H]</th>
-        <th class="border-2 px-1 py-1 text-left">計画予算[\]</th>
-        <th class="border-2 px-1 py-1 text-left">実コスト[\]</th>
+        <th class="border-2 px-1 py-1 text-left">計画予算[&yen;]</th>
+        <th class="border-2 px-1 py-1 text-left">実コスト[&yen;]</th>
       </tr>
       </thead>
       <tbody>
