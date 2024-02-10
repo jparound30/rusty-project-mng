@@ -7,4 +7,9 @@
 リソース一覧
 タスク種別一覧
 マイルストーン一覧
+  <br>
+  <br>
+  <br>
+  <br>
+  <a href="/playground">Svelteの実験場</a>
 </div>

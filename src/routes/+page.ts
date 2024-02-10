@@ -6,4 +6,5 @@ export function load({ params }) {
     // TODO とりあえず必ず /login に飛ばす
     // redirect(307, '/login')
     redirect(307, '/home')
+    // redirect(307, '/playground')
 }
