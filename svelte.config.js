@@ -8,5 +8,11 @@ export default {
 
   kit: {
     adapter: adapter(),
+    alias: {
+      "$lib": "./src/lib",
+      "$lib/*": "./src/lib/*",
+      "components": "./src/components",
+      "$components/*": "./src/components/*"
+    }
   },
 };
