@@ -95,24 +95,3 @@ impl Task {
     }
 
 }
-
-#[allow(dead_code)]
-#[derive(Debug, sqlx::FromRow)]
-struct UserAndAuth {
-    user_id: i64,
-    username: String,
-    password_hash: String,
-    salt: String,
-}
-
-#[allow(dead_code)]
-pub async fn show_all(conn: &mut sqlx::SqliteConnection) -> Result<(), Error> {
-    let users = sqlx::query_as::<_, UserAndAuth>("SELECT user_id, username, password_hash, salt FROM users")
-        .fetch_all(conn)
-        .await?;
-
-    for user in users {
-        println!("Found user {:?}", user);
-    }
-    Ok(())
-}
