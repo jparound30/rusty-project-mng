@@ -2,6 +2,7 @@ use sqlx::Acquire;
 use tauri::State;
 use crate::db_connection::db_connection::DbConnection;
 use crate::models;
+use crate::models::evm::EarnedValueManagementInfo;
 use crate::models::tasks::{Task, TaskFull, TaskSimple};
 
 #[tauri::command]
@@ -75,6 +76,10 @@ pub async fn task_all_full(connection: State<'_, DbConnection>) -> Result<Vec<Ta
     let task_list = models::tasks::Task::all(conn).await;
 
     println!("task_all_full: count{:?}", task_list);
+
+    let evm_info = EarnedValueManagementInfo::get(conn).await;
+    println!("evm_info: {:?}", evm_info);
+
     match task_list {
         Ok(list) => {Ok(list)}
         Err(err) => {Err(err.to_string())}
