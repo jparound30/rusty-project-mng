@@ -10,11 +10,11 @@
         if (task.actual_time != null) {
 
             const resource = data.resources_list.find(s => s.resource_id == task.assignee_resource_id);
-            if (resource != null) {
+            if (resource !== undefined) {
                 actualCost = task.actual_time * resource.cost_per_month / 160
             }
         }
-        return actualCost
+        return actualCost;
     }
 </script>
 
@@ -57,9 +57,9 @@
           <td class="border-2 py-1">{item.due_date ?? ''}</td>
           <td class="border-2 py-1">{item.estimated_time ?? ''}</td>
           <td class="border-2 py-1">{item.actual_time ?? ''}</td>
-          <td class="border-2 py-1">{item.planned_value != null ? item.planned_value.toLocaleString() : ''}</td>
+          <td class="border-2 py-1">{item.planned_value?.toLocaleString() ?? ''}</td>
           {#if (item.actual_time != null)}
-            <td class="border-2 py-1">{calculateActualCost(item)?.toLocaleString()}</td>
+            <td class="border-2 py-1">{calculateActualCost(item)?.toLocaleString() ?? "情報不足のため算出不可"}</td>
           {:else}
             <td class="border-2 py-1"></td>
           {/if}
