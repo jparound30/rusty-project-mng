@@ -20,6 +20,27 @@
 
 <div class="p-4">
   <h1 class="text-2xl underline underline-offset-4">タスク一覧</h1>
+
+  <div class="table-auto my-4">
+    <table>
+      <caption>現時点のEVM指標値</caption>
+      <thead class="border-2">
+      <tr class="bg-blue-300 border-blue-600">
+        <th class="border-2 px-1 py-1 text-left">PV(計画値) [&yen;]</th>
+        <th class="border-2 px-1 py-1 text-left">AC(実コスト) [&yen;]</th>
+        <th class="border-2 px-1 py-1 text-left">EV(出来高) [&yen;]</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr class="">
+          <td class="border-2 py-1 content-center">{data.evm_info.planned_value.toLocaleString()}</td>
+          <td class="border-2 py-1 content-center">{data.evm_info.actual_cost.toLocaleString()}</td>
+          <td class="border-2 py-1 content-center">{data.evm_info.earned_value.toLocaleString()}</td>
+      </tbody>
+    </table>
+  </div>
+  <!-- TODO こことかに、EVMの指標値の履歴をDBからとってグラフ化するなどすれば、最低限ほしいものはできる -->
+
   <a href="/tasks/add">
     <button class="btn-primary rounded-3xl font-bold my-2">+</button>
   </a>
@@ -33,13 +54,13 @@
         <th class="border-2 px-1 py-1 text-left">担当者</th>
         <th class="border-2 px-1 py-1 text-left">親タスク</th>
         <th class="border-2 px-1 py-1 text-left">状態</th>
-        <th class="border-2 px-1 py-1 text-left">進捗率[%]</th>
+        <th class="border-2 px-1 py-1 text-left">進捗率 [%]</th>
         <th class="border-2 px-1 py-1 text-left">開始日</th>
         <th class="border-2 px-1 py-1 text-left">期限日</th>
-        <th class="border-2 px-1 py-1 text-left">予定工数[H]</th>
-        <th class="border-2 px-1 py-1 text-left">実工数[H]</th>
-        <th class="border-2 px-1 py-1 text-left">計画予算[&yen;]</th>
-        <th class="border-2 px-1 py-1 text-left">実コスト[&yen;]</th>
+        <th class="border-2 px-1 py-1 text-left">予定工数 [H]</th>
+        <th class="border-2 px-1 py-1 text-left">実工数 [H]</th>
+        <th class="border-2 px-1 py-1 text-left">計画予算 [&yen;]</th>
+        <th class="border-2 px-1 py-1 text-left">実コスト [&yen;]</th>
       </tr>
       </thead>
       <tbody>

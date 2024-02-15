@@ -3,14 +3,14 @@ use sqlx::Error;
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct EarnedValueManagementInfo {
-    pub planed_value: i64,
+    pub planned_value: i64,
     pub earned_value: i64,
     pub actual_cost: i64,
 }
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 struct PlanedValue {
-    planed_value: i64,
+    planned_value: i64,
 }
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
@@ -25,7 +25,7 @@ struct ActualCost {
 
 impl EarnedValueManagementInfo {
     pub async fn get(conn: &mut sqlx::SqliteConnection) -> Result<EarnedValueManagementInfo, Error> {
-        let planed_value = sqlx::query_file_as!(PlanedValue, "sqls/evm/get_planed_value.sql")
+        let planed_value = sqlx::query_file_as!(PlanedValue, "sqls/evm/get_planned_value.sql")
             .fetch_one(&mut *conn)
             .await?;
 
@@ -38,7 +38,7 @@ impl EarnedValueManagementInfo {
             .await?;
 
         let ret = EarnedValueManagementInfo {
-            planed_value: planed_value.planed_value,
+            planned_value: planed_value.planned_value,
             earned_value: earned_value.earned_value,
             actual_cost: actual_cost.actual_cost,
         };

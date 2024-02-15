@@ -1,6 +1,7 @@
 import {invoke} from "@tauri-apps/api/core";
 import type {Resource} from "$components/Resource";
 import type {TaskFull} from "$components/TaskFull";
+import {EarnedValueManagementInfo} from "components/EarnedValueManagementInfo";
 
 
 /** @type {import('./$types').PageLoad} */
@@ -25,10 +26,20 @@ export async function load({params}) {
                 return [] as Resource[];
             })
 
+    let evm_info_p =
+        invoke<EarnedValueManagementInfo>("get_current_evm_info", {})
+        .then(value => {
+            console.log("現時点のEVMの各情報の取得成功")
+            return value
+        }).catch(reason => {
+            console.error("現時点のEVMの各情報の取得失敗", reason)
+            return new EarnedValueManagementInfo();
+        })
 
-    const ret = await Promise.all([task_list_p, resources_list_p]);
+    const ret = await Promise.all([task_list_p, resources_list_p, evm_info_p]);
     return {
         task_list : ret[0],
         resources_list: ret[1],
+        evm_info: ret[2],
     }
 }
