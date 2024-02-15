@@ -22,12 +22,6 @@ pub async fn task_add(connection: State<'_, DbConnection>, title: &str, descript
 
     let conn = conn_result.ok().unwrap();
 
-    println!("title:{:?}", title);
-    println!("assignee_resource_id:{:?}", assignee_resource_id);
-    println!("task_status_id:{:?}", task_status_id);
-    println!("progress_rate:{:?}", progress_rate);
-    println!("planned_value:{:?}", planned_value);
-
     let new_task = Task {
         task_id: 0,
         title: title.to_string(),
@@ -73,8 +67,6 @@ pub async fn task_all_full(connection: State<'_, DbConnection>) -> Result<Vec<Ta
     let conn = conn_result.ok().unwrap();
 
     let task_list = models::tasks::Task::all(conn).await;
-
-    println!("task_all_full: count{:?}", task_list);
 
     match task_list {
         Ok(list) => {Ok(list)}
