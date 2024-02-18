@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
-use sqlx::{Error, TypeInfo};
-use sqlx::sqlite::SqliteTypeInfo;
+use sqlx::Error;
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct EarnedValueManagementInfo {
@@ -26,8 +25,8 @@ struct ActualCost {
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct PlanedValueChanges {
-    date: Option<String>,
-    planned_value: Option<i64>,
+    date: String,
+    planned_value: i64,
 }
 
 impl EarnedValueManagementInfo {
