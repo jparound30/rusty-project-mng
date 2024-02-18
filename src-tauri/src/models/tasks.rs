@@ -44,22 +44,20 @@ pub struct TaskSimple {
 
 impl Task {
     pub async fn add(mut self: Self, conn: &mut sqlx::SqliteConnection) -> Result<(), Error> {
-        let last_insert_rowid = sqlx::query(
-            "INSERT INTO tasks \
-                    (title, description, assignee_resource_id, parent_task_id, start_date, due_date, estimated_time, actual_time, planned_value, task_status_id, progress_rate)\
-                 VALUES\
-                    (?1,?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)")
-            .bind(self.title)
-            .bind(self.description)
-            .bind(self.assignee_resource_id)
-            .bind(self.parent_task_id)
-            .bind(self.start_date)
-            .bind(self.due_date)
-            .bind(self.estimated_time)
-            .bind(self.actual_time)
-            .bind(self.planned_value)
-            .bind(self.task_status_id)
-            .bind(self.progress_rate)
+        let last_insert_rowid = sqlx::query_file!(
+            "sqls/tasks/add.sql",
+            self.title,
+            self.description,
+            self.assignee_resource_id,
+            self.parent_task_id,
+            self.start_date,
+            self.due_date,
+            self.estimated_time,
+            self.actual_time,
+            self.planned_value,
+            self.task_status_id,
+            self.progress_rate,
+        )
             .execute(conn)
             .await?
             .last_insert_rowid();
@@ -69,12 +67,7 @@ impl Task {
     }
 
     pub async fn get(conn: &mut sqlx::SqliteConnection, task_id: i64) -> Result<Option<Task>, Error> {
-        let option = sqlx::query_as::<_, Task>("\
-                        SELECT task_id, title, description, assignee_resource_id, parent_task_id, start_date, due_date, estimated_time, actual_time, planned_value, task_status_id, progress_rate\
-                        FROM tasks \
-                        WHERE task_id = ?1
-                        ")
-            .bind(task_id)
+        let option = sqlx::query_file_as!(Task, "sqls/tasks/get.sql", task_id)
             .fetch_optional(conn)
             .await?;
         Ok(option)
