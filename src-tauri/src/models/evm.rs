@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
-use sqlx::Error;
+use sqlx::{Error, TypeInfo};
+use sqlx::sqlite::SqliteTypeInfo;
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct EarnedValueManagementInfo {
@@ -23,6 +24,12 @@ struct ActualCost {
     actual_cost: i64,
 }
 
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
+pub struct PlanedValueChanges {
+    date: Option<String>,
+    planned_value: Option<i64>,
+}
+
 impl EarnedValueManagementInfo {
     pub async fn get(conn: &mut sqlx::SqliteConnection) -> Result<EarnedValueManagementInfo, Error> {
         let planed_value = sqlx::query_file_as!(PlanedValue, "sqls/evm/get_planned_value.sql")
@@ -43,5 +50,13 @@ impl EarnedValueManagementInfo {
             actual_cost: actual_cost.actual_cost,
         };
         Ok(ret)
+    }
+
+    pub async fn get_planned_value_changes(conn: &mut sqlx::SqliteConnection, start_date: &str, end_date: &str) -> Result<Vec<PlanedValueChanges>, Error> {
+        let planed_values = sqlx::query_file_as!(PlanedValueChanges, "sqls/evm/get_planned_value_changes.sql", start_date, end_date)
+            .fetch_all(&mut *conn)
+            .await?;
+
+        Ok(planed_values)
     }
 }

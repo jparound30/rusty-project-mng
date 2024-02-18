@@ -36,10 +36,29 @@
           <td class="border-2 py-1 content-center">{data.evm_info.planned_value.toLocaleString()}</td>
           <td class="border-2 py-1 content-center">{data.evm_info.actual_cost.toLocaleString()}</td>
           <td class="border-2 py-1 content-center">{data.evm_info.earned_value.toLocaleString()}</td>
+        </tr>
       </tbody>
     </table>
   </div>
   <!-- TODO こことかに、EVMの指標値の履歴をDBからとってグラフ化するなどすれば、最低限ほしいものはできる -->
+  <!-- TODO PVの時系列データの表。データを受け取ってSVGでグラフ化するコンポーネントを作りたいね -->
+  <table>
+    <caption>PV</caption>
+    <thead class="border-2">
+    <tr class="bg-blue-300 border-blue-600">
+      <th class="border-2 px-1 py-1 text-left">日付</th>
+      <th class="border-2 px-1 py-1 text-left">PV(計画値) [&yen;]</th>
+    </tr>
+    </thead>
+    <tbody>
+    {#each data.planned_value_changes as item (item.date)}
+    <tr class="">
+      <td class="border-2 py-1 content-center">{item.date}</td>
+      <td class="border-2 py-1 content-center">{item.planned_value.toLocaleString()}</td>
+    </tr>
+    {/each}
+    </tbody>
+  </table>
 
   <a href="/tasks/add">
     <button class="btn-primary rounded-3xl font-bold my-2">+</button>

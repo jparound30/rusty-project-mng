@@ -75,6 +75,7 @@ pub async fn run() {
             crate::apis::tasks::task_all_full,
             crate::apis::tasks::task_simple_all,
             crate::apis::evm::get_current_evm_info,
+            crate::apis::evm::get_planned_value_changes,
         ])
         .build(tauri::generate_context!())
         // .run(tauri::generate_context!())
