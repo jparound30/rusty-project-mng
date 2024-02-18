@@ -1,6 +1,7 @@
 <script lang="ts">
     import type {PageData} from './$types'
     import type {TaskFull} from "$components/TaskFull";
+    import PlannedValueChangesChart from "$lib/PlannedValueChangesChart.svelte";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData
@@ -59,6 +60,7 @@
     {/each}
     </tbody>
   </table>
+  <PlannedValueChangesChart data={data.planned_value_changes} />
 
   <a href="/tasks/add">
     <button class="btn-primary rounded-3xl font-bold my-2">+</button>
