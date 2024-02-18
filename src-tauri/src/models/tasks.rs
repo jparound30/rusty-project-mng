@@ -1,5 +1,4 @@
 use std::str::FromStr;
-use chrono::{DateTime, ParseResult};
 use serde::{Deserialize, Serialize};
 use sqlx::Error;
 
@@ -66,7 +65,7 @@ impl Task {
             .await?
             .last_insert_rowid();
 
-        self.task_id = last_insert_rowid as i64;
+        self.task_id = last_insert_rowid;
         Ok(())
     }
 
@@ -97,6 +96,7 @@ impl Task {
     }
 
     pub async fn get_min_start_date(conn: &mut sqlx::SqliteConnection) -> Result<String, Error> {
+        // type SqlDate = NaiveDate;
         let record = sqlx::query_file!("sqls/tasks/get_min_start_date.sql")
             .fetch_one(conn)
             .await?;
@@ -104,7 +104,6 @@ impl Task {
     }
 
     pub async fn get_max_end_date(conn: &mut sqlx::SqliteConnection) -> Result<String, Error> {
-        type SqlDateTime = chrono::DateTime<chrono::Utc>;
         let record = sqlx::query_file!("sqls/tasks/get_max_end_date.sql")
             .fetch_one(conn)
             .await?;
