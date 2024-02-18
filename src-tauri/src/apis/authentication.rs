@@ -7,7 +7,7 @@ use crate::models::users::User;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserMsg {
-    user_id: u32,
+    user_id: i64,
     username: String,
 }
 #[tauri::command]
