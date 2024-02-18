@@ -5,19 +5,14 @@ use crate::utils::hash::verify;
 #[allow(dead_code)]
 #[derive(Debug, sqlx::FromRow)]
 struct UserAuthentication {
-    user_id: i32,
+    user_id: i64,
     username: String,
-    password_hash: String,
-    salt: String,
+    password_hash: Option<String>,
+    salt: Option<String>,
 }
 
 pub async fn authenticate(conn: &mut sqlx::SqliteConnection, username: &str, password: &str) -> Result<bool, Error> {
-    let query_result = sqlx::query_as::<_, UserAuthentication>("\
-                        SELECT user_id, username, password_hash, salt \
-                        FROM users \
-                        WHERE username = ?1
-                        ")
-        .bind(username)
+    let query_result = sqlx::query_file_as!(UserAuthentication, "sqls/authentication/authenticate.sql", username)
         .fetch_optional(conn).await;
     if query_result.is_err() {
         return Err(query_result.err().unwrap());
@@ -29,5 +24,13 @@ pub async fn authenticate(conn: &mut sqlx::SqliteConnection, username: &str, pas
     }
 
     let user_authentication = user_option.unwrap();
-    Ok(verify(password.to_string(), user_authentication.password_hash))
+
+    match user_authentication.password_hash {
+        Some(password_hash) => {
+            Ok(verify(password.to_string(), password_hash))
+        }
+        None => {
+            Ok(false)
+        }
+    }
 }
