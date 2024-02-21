@@ -3,6 +3,7 @@ import type {Resource} from "$components/Resource";
 import type {TaskFull} from "$components/TaskFull";
 import {EarnedValueManagementInfo} from "components/EarnedValueManagementInfo";
 import {PlannedValueChanges} from "components/PlannedValueChanges";
+import {EvmHistory} from "components/EvmHistory";
 
 
 /** @type {import('./$types').PageLoad} */
@@ -13,9 +14,9 @@ export async function load({params}) {
                 console.log("タスク（idとタイトルのみ）一覧取得成功")
                 return value
             }).catch(reason => {
-                console.error("タスク（idとタイトルのみ）一覧取得失敗", reason)
-                return [] as TaskFull[];
-            })
+            console.error("タスク（idとタイトルのみ）一覧取得失敗", reason)
+            return [] as TaskFull[];
+        })
 
     let resources_list_p =
         invoke<Resource[]>("resources_list", {})
@@ -23,16 +24,16 @@ export async function load({params}) {
                 console.log("リソース一覧取得成功")
                 return value
             }).catch(reason => {
-                console.error("リソース一覧取得失敗", reason)
-                return [] as Resource[];
-            })
+            console.error("リソース一覧取得失敗", reason)
+            return [] as Resource[];
+        })
 
     let evm_info_p =
         invoke<EarnedValueManagementInfo>("get_current_evm_info", {})
-        .then(value => {
-            console.log("現時点のEVMの各情報の取得成功")
-            return value
-        }).catch(reason => {
+            .then(value => {
+                console.log("現時点のEVMの各情報の取得成功")
+                return value
+            }).catch(reason => {
             console.error("現時点のEVMの各情報の取得失敗", reason)
             return new EarnedValueManagementInfo();
         })
@@ -45,11 +46,29 @@ export async function load({params}) {
             console.error("PV変化の一覧取得取得失敗", reason)
             return [] as PlannedValueChanges[];
         })
-    const ret = await Promise.all([task_list_p, resources_list_p, evm_info_p, planned_value_changes]);
+
+    let evm_histories = invoke<EvmHistory[]>("get_evm_histories", {})
+        .then(value => {
+            console.log("AC/EVの履歴取得成功")
+            return value
+        }).catch(reason => {
+            console.error("AC/EVの履歴取得失敗", reason)
+            return [] as EvmHistory[];
+        })
+
+    const ret =
+        await Promise.all([
+            task_list_p,
+            resources_list_p,
+            evm_info_p,
+            planned_value_changes,
+            evm_histories,
+        ]);
     return {
-        task_list : ret[0],
+        task_list: ret[0],
         resources_list: ret[1],
         evm_info: ret[2],
         planned_value_changes: ret[3],
+        evm_histories: ret[4],
     }
 }

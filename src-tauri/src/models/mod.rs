@@ -4,3 +4,4 @@ pub mod task_status;
 pub mod resources;
 pub mod tasks;
 pub mod evm;
+pub mod evm_histories;
