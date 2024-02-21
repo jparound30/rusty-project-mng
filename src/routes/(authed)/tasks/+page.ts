@@ -1,9 +1,9 @@
 import {invoke} from "@tauri-apps/api/core";
 import type {Resource} from "$components/Resource";
 import type {TaskFull} from "$components/TaskFull";
-import {EarnedValueManagementInfo} from "components/EarnedValueManagementInfo";
-import {PlannedValueChanges} from "components/PlannedValueChanges";
-import {EvmHistory} from "components/EvmHistory";
+import {EarnedValueManagementInfo} from "$components/EarnedValueManagementInfo";
+import type {PlannedValueChanges} from "$components/PlannedValueChanges";
+import type {EvmHistory} from "$components/EvmHistory";
 
 
 /** @type {import('./$types').PageLoad} */

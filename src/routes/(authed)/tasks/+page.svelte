@@ -2,6 +2,8 @@
     import type {PageData} from './$types'
     import type {TaskFull} from "$components/TaskFull";
     import PlannedValueChangesChart from "$lib/PlannedValueChangesChart.svelte";
+    import EvmTable from "$lib/EvmTable.svelte";
+    import EvmChart from "$lib/EvmChart.svelte";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData
@@ -41,26 +43,9 @@
       </tbody>
     </table>
   </div>
-  <!-- TODO こことかに、EVMの指標値の履歴をDBからとってグラフ化するなどすれば、最低限ほしいものはできる -->
-  <!-- TODO PVの時系列データの表。データを受け取ってSVGでグラフ化するコンポーネントを作りたいね -->
-  <table>
-    <caption>PV</caption>
-    <thead class="border-2">
-    <tr class="bg-blue-300 border-blue-600">
-      <th class="border-2 px-1 py-1 text-left">日付</th>
-      <th class="border-2 px-1 py-1 text-left">PV(計画値) [&yen;]</th>
-    </tr>
-    </thead>
-    <tbody>
-    {#each data.planned_value_changes as item (item.date)}
-    <tr class="">
-      <td class="border-2 py-1 content-center">{item.date}</td>
-      <td class="border-2 py-1 content-center">{item.planned_value.toLocaleString()}</td>
-    </tr>
-    {/each}
-    </tbody>
-  </table>
-  <PlannedValueChangesChart data={data.planned_value_changes} />
+  <EvmTable evm_histories="{data.evm_histories}" planned_value_changes="{data.planned_value_changes}" />
+  <EvmChart evm_histories="{data.evm_histories}" planned_value_changes="{data.planned_value_changes}" />
+<!--  <PlannedValueChangesChart data={data.planned_value_changes} />-->
 
   <a href="/tasks/add">
     <button class="btn-primary rounded-3xl font-bold my-2">+</button>
