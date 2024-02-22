@@ -10,7 +10,7 @@
 RustRoverを使っている。
 
 以下はてんぷらのまま。  
-機会があれば真面目気書く。
+機会があれば真面目に書く。
 
 ## Recommended IDE Setup
 
