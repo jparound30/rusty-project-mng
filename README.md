@@ -1,6 +1,16 @@
-# Tauri + Svelte + Typescript
+# プロジェクト管理（EVM）に使えるものができるといいなぁ
 
-This template should help get you started developing with Tauri, Svelte and TypeScript in Vite.
+勉強かねて。
+
++ Rust
++ TypeScript
++ Tauri
++ Svelte
+
+RustRoverを使っている。
+
+以下はてんぷらのまま。  
+機会があれば真面目気書く。
 
 ## Recommended IDE Setup
 
