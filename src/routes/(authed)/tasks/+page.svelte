@@ -4,6 +4,7 @@
     import PlannedValueChangesChart from "$lib/PlannedValueChangesChart.svelte";
     import EvmTable from "$lib/EvmTable.svelte";
     import EvmChart from "$lib/EvmChart.svelte";
+    import EvmIndex from "$lib/EvmIndex.svelte";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData
@@ -24,25 +25,7 @@
 <div class="p-4">
   <h1 class="text-2xl underline underline-offset-4">タスク一覧</h1>
 
-  <div class="table-auto my-4">
-    <table>
-      <caption>現時点のEVM指標値</caption>
-      <thead class="border-2">
-      <tr class="bg-blue-300 border-blue-600">
-        <th class="border-2 px-1 py-1 text-left">PV(計画値) [&yen;]</th>
-        <th class="border-2 px-1 py-1 text-left">AC(実コスト) [&yen;]</th>
-        <th class="border-2 px-1 py-1 text-left">EV(出来高) [&yen;]</th>
-      </tr>
-      </thead>
-      <tbody>
-        <tr class="">
-          <td class="border-2 py-1 content-center">{data.evm_info.planned_value.toLocaleString()}</td>
-          <td class="border-2 py-1 content-center">{data.evm_info.actual_cost.toLocaleString()}</td>
-          <td class="border-2 py-1 content-center">{data.evm_info.earned_value.toLocaleString()}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <EvmIndex evmInfo="{data.evm_info}" budgetAtCompletion="{data.planned_value_changes[(data.planned_value_changes.length) - 1].planned_value}"/>
   <EvmTable evm_histories="{data.evm_histories}" planned_value_changes="{data.planned_value_changes}" />
   <EvmChart evm_histories="{data.evm_histories}" planned_value_changes="{data.planned_value_changes}" />
 <!--  <PlannedValueChangesChart data={data.planned_value_changes} />-->
