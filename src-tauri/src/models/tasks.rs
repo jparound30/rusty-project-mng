@@ -66,8 +66,32 @@ impl Task {
         Ok(())
     }
 
-    pub async fn get(conn: &mut sqlx::SqliteConnection, task_id: i64) -> Result<Option<Task>, Error> {
-        let option = sqlx::query_file_as!(Task, "sqls/tasks/get.sql", task_id)
+    pub async fn update(mut self: Self, conn: &mut sqlx::SqliteConnection) -> Result<(), Error> {
+        let last_insert_rowid = sqlx::query_file!(
+            "sqls/tasks/update.sql",
+            self.task_id,
+            self.title,
+            self.description,
+            self.assignee_resource_id,
+            self.parent_task_id,
+            self.start_date,
+            self.due_date,
+            self.estimated_time,
+            self.actual_time,
+            self.planned_value,
+            self.task_status_id,
+            self.progress_rate,
+        )
+            .execute(conn)
+            .await?
+            .last_insert_rowid();
+
+        self.task_id = last_insert_rowid;
+        Ok(())
+    }
+
+    pub async fn get_full(conn: &mut sqlx::SqliteConnection, task_id: i64) -> Result<Option<TaskFull>, Error> {
+        let option = sqlx::query_file_as!(TaskFull, "sqls/tasks/get_full.sql", task_id)
             .fetch_optional(conn)
             .await?;
         Ok(option)

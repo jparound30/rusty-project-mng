@@ -9,6 +9,10 @@
 
 RustRoverを使っている。
 
+## TODO
+- sqlxは以下のプラグインに移行してもよいかも？  
+https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/sql
+
 以下はてんぷらのまま。  
 機会があれば真面目に書く。
 

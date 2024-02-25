@@ -1,6 +1,10 @@
 <script lang="ts">
     import type {PageData} from './$types'
     import type {TaskFull} from "$components/TaskFull";
+    import type {Resource} from "components/Resource";
+    import {onDestroy, onMount} from "svelte";
+    import TaskEdit from "$lib/TaskEdit.svelte";
+    import {invoke} from "@tauri-apps/api/core";
     // import PlannedValueChangesChart from "$lib/PlannedValueChangesChart.svelte";
     // import EvmTable from "$lib/EvmTable.svelte";
     // import EvmChart from "$lib/EvmChart.svelte";
@@ -9,26 +13,85 @@
     /** @type {import('./$types').PageData} */
     export let data: PageData
 
+    let menuVisible = false;
+    let menuPosition = {x: 0, y: 0};
+    let menuElement: HTMLElement;
+
+    let editOpen = false;
+    let selectTaskId: number | undefined = undefined;
+
     function calculateActualCost(task: TaskFull): number | null {
         let actualCost: number | null = null;
         if (task.actual_time != null) {
 
-            const resource = data.resources_list.find(s => s.resource_id == task.assignee_resource_id);
+            const resource: Resource | undefined = data.resources_list.find(s => s.resource_id == task.assignee_resource_id);
             if (resource !== undefined) {
                 actualCost = task.actual_time * resource.cost_per_month / 160
             }
         }
         return actualCost;
     }
+
+    function showMenu(event: MouseEvent, taskId: number) {
+        // デフォルトの右クリックメニューを表示させない
+        event.preventDefault();
+
+        // メニューを表示する位置を設定
+        menuPosition = {x: event.pageX, y: event.pageY};
+
+        // メニューを表示
+        menuVisible = true;
+
+        selectTaskId = taskId;
+    }
+
+    function hideMenu() {
+        // メニューを非表示
+        menuVisible = false;
+    }
+
+    function handleOutsideClick(event:  MouseEvent) {
+        if (menuElement && !menuElement.contains(event.target as Node)) {
+            hideMenu();
+        }
+    }
+
+    function openEditDialog(event: MouseEvent) {
+        editOpen = true
+    }
+    onMount(() => {
+        window.addEventListener("click", handleOutsideClick);
+    });
+
+    onDestroy(() => {
+        window.removeEventListener("click", handleOutsideClick);
+    });
+
+
+    async function updateTaskList() {
+        console.log("updateTaskList")
+        let task_list_p =
+            invoke<TaskFull[]>("task_all_full", {})
+                .then(value => {
+                    console.log("タスク（idとタイトルのみ）一覧取得成功")
+                    return value
+                }).catch(reason => {
+                console.error("タスク（idとタイトルのみ）一覧取得失敗", reason)
+                return [] as TaskFull[];
+            })
+        data.task_list = await task_list_p;
+    }
+
 </script>
 
 <div class="p-4">
   <h1 class="text-2xl underline underline-offset-4">タスク一覧</h1>
 
-<!-- TODO いったんコメントアウトしとく。どれかは見れた方が便利そう -->
-<!--  <EvmIndex evmInfo="{data.evm_info}" budgetAtCompletion="{data.planned_value_changes[(data.planned_value_changes.length) - 1].planned_value}"/>-->
-<!--  <EvmChart evm_histories="{data.evm_histories}" planned_value_changes="{data.planned_value_changes}" />-->
-<!--  <PlannedValueChangesChart data={data.planned_value_changes} />-->
+  <TaskEdit bind:showModal={editOpen} bind:taskId="{selectTaskId}" on:task-updated={updateTaskList} />
+  <!-- TODO いったんコメントアウトしとく。どれかは見れた方が便利そう -->
+  <!--  <EvmIndex evmInfo="{data.evm_info}" budgetAtCompletion="{data.planned_value_changes[(data.planned_value_changes.length) - 1].planned_value}"/>-->
+  <!--  <EvmChart evm_histories="{data.evm_histories}" planned_value_changes="{data.planned_value_changes}" />-->
+  <!--  <PlannedValueChangesChart data={data.planned_value_changes} />-->
 
   <a href="/tasks/add">
     <button class="btn-primary rounded-3xl font-bold my-2">+</button>
@@ -54,7 +117,7 @@
       </thead>
       <tbody>
       {#each data.task_list as item (item.task_id)}
-        <tr class="">
+        <tr class="" on:contextmenu={(event) => {showMenu(event, item.task_id)}}>
           <td class="border-2 py-1 content-center"><span class="p-2">{item.title}</span></td>
           <td class="border-2 py-1">{item.description ?? ''}</td>
           <td class="border-2 py-1">{item.assignee_resource_name ?? ''}</td>
@@ -79,3 +142,16 @@
     </table>
   </div>
 </div>
+
+<!-- アクションメニュー -->
+{#if menuVisible}
+  <div bind:this={menuElement}
+       style="position: fixed; top: {menuPosition.y}px; left: {menuPosition.x}px; background: #fff; border: 1px solid #ccc; padding: 10px;"
+       on:click={hideMenu}
+       on:keyup={hideMenu}
+       role="menu"
+       tabindex="-1">
+    <button on:click={openEditDialog}>編集する</button>
+    <div>削除する</div>
+  </div>
+{/if}
