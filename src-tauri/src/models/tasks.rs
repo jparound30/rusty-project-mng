@@ -90,6 +90,13 @@ impl Task {
         Ok(())
     }
 
+    pub async fn delete(conn: &mut sqlx::SqliteConnection, task_id: i64) -> Result<(), Error> {
+        let option = sqlx::query_file!("sqls/tasks/delete.sql", task_id)
+            .execute(conn)
+            .await?;
+        Ok(())
+    }
+
     pub async fn get_full(conn: &mut sqlx::SqliteConnection, task_id: i64) -> Result<Option<TaskFull>, Error> {
         let option = sqlx::query_file_as!(TaskFull, "sqls/tasks/get_full.sql", task_id)
             .fetch_optional(conn)

@@ -5,6 +5,7 @@
     import {onDestroy, onMount} from "svelte";
     import TaskEdit from "$lib/TaskEdit.svelte";
     import {invoke} from "@tauri-apps/api/core";
+    import Modal from "$lib/Modal.svelte";
     // import PlannedValueChangesChart from "$lib/PlannedValueChangesChart.svelte";
     // import EvmTable from "$lib/EvmTable.svelte";
     // import EvmChart from "$lib/EvmChart.svelte";
@@ -18,7 +19,10 @@
     let menuElement: HTMLElement;
 
     let editOpen = false;
+    let selectTask: TaskFull | undefined = undefined;
     let selectTaskId: number | undefined = undefined;
+
+    let showDeleteDialog = false;
 
     function calculateActualCost(task: TaskFull): number | null {
         let actualCost: number | null = null;
@@ -42,6 +46,7 @@
         // メニューを表示
         menuVisible = true;
 
+        selectTask = data.task_list.find(v => v.task_id == taskId);
         selectTaskId = taskId;
     }
 
@@ -50,7 +55,7 @@
         menuVisible = false;
     }
 
-    function handleOutsideClick(event:  MouseEvent) {
+    function handleOutsideClick(event: MouseEvent) {
         if (menuElement && !menuElement.contains(event.target as Node)) {
             hideMenu();
         }
@@ -59,6 +64,7 @@
     function openEditDialog(event: MouseEvent) {
         editOpen = true
     }
+
     onMount(() => {
         window.addEventListener("click", handleOutsideClick);
     });
@@ -82,12 +88,29 @@
         data.task_list = await task_list_p;
     }
 
+    async function deleteTask(taskId: number) {
+        await invoke<TaskFull[]>("task_delete", {taskId})
+            .then(value => {
+                console.log("タスク削除成功")
+            }).catch(reason => {
+                console.error("タスク削除失敗", reason)
+            })
+        await updateTaskList();
+        closeDeleteDialog();
+    }
+
+    function openDeleteDialog() {
+        showDeleteDialog = true;
+    }
+    function closeDeleteDialog() {
+        showDeleteDialog = false;
+    }
 </script>
 
 <div class="p-4">
   <h1 class="text-2xl underline underline-offset-4">タスク一覧</h1>
 
-  <TaskEdit bind:showModal={editOpen} bind:taskId="{selectTaskId}" on:task-updated={updateTaskList} />
+  <TaskEdit bind:showModal={editOpen} bind:taskId="{selectTaskId}" on:task-updated={updateTaskList}/>
   <!-- TODO いったんコメントアウトしとく。どれかは見れた方が便利そう -->
   <!--  <EvmIndex evmInfo="{data.evm_info}" budgetAtCompletion="{data.planned_value_changes[(data.planned_value_changes.length) - 1].planned_value}"/>-->
   <!--  <EvmChart evm_histories="{data.evm_histories}" planned_value_changes="{data.planned_value_changes}" />-->
@@ -150,8 +173,20 @@
        on:click={hideMenu}
        on:keyup={hideMenu}
        role="menu"
-       tabindex="-1">
-    <button on:click={openEditDialog}>編集する</button>
-    <div>削除する</div>
+       tabindex="-1"
+       class="flex flex-col"
+  >
+    <button class="m-2" on:click={openEditDialog}>編集する</button>
+    <button class="m-2" on:click={openDeleteDialog}>削除する</button>
   </div>
 {/if}
+
+<Modal bind:showModal={showDeleteDialog}>
+  <div slot="header">
+    タスク名:[{selectTask?.title}] を削除します
+  </div>
+  <div slot="footer" class="flex flex-row">
+    <button class="bg-red-700 hover:bg-red-600 text-white rounded m-2 px-4 py-1" on:click={() => {if (selectTaskId !== undefined) deleteTask(selectTaskId)}}>削除</button>
+    <button class="bg-gray-400 hover:bg-gray-300 text-white rounded m-2 px-4 py-1" on:click={closeDeleteDialog}>キャンセル</button>
+  </div>
+</Modal>

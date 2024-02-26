@@ -97,6 +97,34 @@ pub async fn task_update(connection: State<'_, DbConnection>, task_id: i64, titl
 }
 
 #[tauri::command]
+pub async fn task_delete(connection: State<'_, DbConnection>, task_id: i64) -> Result<String, String> {
+    let transaction_result = connection.pool.begin().await;
+    if transaction_result.is_err() {
+        return Err(transaction_result.err().unwrap().to_string());
+    }
+
+    let mut transaction = transaction_result.unwrap();
+    let conn_result = transaction.acquire().await;
+    if conn_result.is_err() {
+        return Err(conn_result.err().unwrap().to_string());
+    }
+
+    let conn = conn_result.ok().unwrap();
+
+    let result = Task::delete(conn, task_id).await;
+    match result {
+        Ok(_) => {
+            let _ = transaction.commit().await;
+            Ok("success".to_string())
+        }
+        Err(err) => {
+            let _ = transaction.rollback().await;
+            Err(err.to_string())
+        }
+    }
+}
+
+#[tauri::command]
 pub async fn task_get(connection: State<'_, DbConnection>, task_id: i64) -> Result<TaskFull, String> {
     let transaction_result = connection.pool.begin().await;
     if transaction_result.is_err() {

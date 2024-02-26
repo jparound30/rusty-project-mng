@@ -74,6 +74,7 @@ pub async fn run() {
             crate::apis::resources::resources_list,
             crate::apis::tasks::task_get,
             crate::apis::tasks::task_update,
+            crate::apis::tasks::task_delete,
             crate::apis::tasks::task_all_full,
             crate::apis::tasks::task_simple_all,
             crate::apis::evm::get_current_evm_info,
