@@ -9,7 +9,8 @@
         "height": 800,
         "resizable": true,
         "title": "rusty-project-mng",
-        "width": 1200
+        "width": 1200,
+        "fileDropEnabled":false
       }
     ]
   },
