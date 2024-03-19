@@ -42,7 +42,5 @@
         width : 90%;
         height: calc(60px * 40 + 80px);
         overflow-x: scroll;
-        display: flex;
-        flex-flow: column nowrap;
     }
 </style>
