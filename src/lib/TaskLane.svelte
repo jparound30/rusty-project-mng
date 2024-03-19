@@ -3,6 +3,7 @@
     let start: number;
     let end: number;
     let xPos: number;
+    let yPos: number;
 
 
     const positionToStyle = (pos: number) => `translateX(${pos}px)`;
@@ -12,19 +13,24 @@
             const selectedPart = event.target.classList.contains('left-handle') ? 'start' :
                 event.target.classList.contains('right-handle') ? 'end' : 'middle';
             console.log("dragstart  : " + selectedPart)
-            event.dataTransfer?.setData("text/plain", selectedPart); // Add this line
-            let selectedPart2 = event.dataTransfer?.getData("text/plain");
 
-            console.log("dragstart: selectedPart = " + selectedPart2)
-
-            var click_x = event.pageX ;
+            var click_x = event.pageX;
+            var click_y = event.pageY;
 
             // 要素の位置を取得
             var client_rect = (event.target as Element).getBoundingClientRect() ;
             var position_x = client_rect.left + window.scrollX ;
+            var position_y = client_rect.top + window.scrollY ;
 
             // 要素内におけるクリック位置を計算
-            xPos = click_x - position_x ;
+            xPos = click_x - position_x;
+            yPos = click_y - position_y;
+
+            event.dataTransfer?.setData("text/plain", selectedPart);
+            event.dataTransfer?.setDragImage(event.target.parentElement!, xPos ,yPos);
+            let selectedPart2 = event.dataTransfer?.getData("text/plain");
+
+            console.log("dragstart: selectedPart = " + selectedPart2)
 
         } else {
             console.log("dragstart  : OTHER EVENT")
@@ -116,16 +122,17 @@
        on:drop={drop}
        on:dragover|preventDefault={dragover}
        on:dragenter|preventDefault={dragenter}
-       on:dragleave|preventDefault={dragleave}>
+       on:dragleave|preventDefault={dragleave}
+
+      on:dragstart|stopPropagation={dragstart}
+      on:drag|preventDefault|stopPropagation={drag}
+      on:dragend|stopPropagation={dragend}>
     <div class="task"
          style="transform: {positionToStyle(start)};">
       <div class="left-handle" draggable="true"
       ></div>
       <div class="center-handle"
            draggable="true"
-           on:dragstart|stopPropagation={dragstart}
-           on:drag|preventDefault|stopPropagation={drag}
-           on:dragend|stopPropagation={dragend}
            on:dragover|preventDefault
       >
         タスク名
@@ -140,15 +147,12 @@
     .schedule-lane {
         height: 40px;
         width: calc(40px * 10);
-        /*flex-wrap: nowrap;*/
-        /*display: flex;*/
         background-color: white;
     }
     .task {
         /*position: relative;*/
         position: absolute;
         flex-wrap: nowrap;
-        /*display: flex;*/
         width: calc(40px * 4);
         height: 40px;
         background-color:gray;
@@ -159,12 +163,12 @@
         height: 100%;
         width: calc(40px * 4 - 10px * 2);
         left: 10px;
-        /*flex-grow: 1;*/
         cursor: grab;
         z-index: 1;
     }
     .left-handle, .right-handle {
         position: absolute;
+        min-width: 10px;
         width: 10px;
         height: 100%;
         cursor: grab;
@@ -174,19 +178,10 @@
         left: 0;
         border-radius: 4px 0 0 4px;
         background-color: red;
-        /*height: 40px;*/
-        /*min-width: 8px;*/
-        /*width: 8px;*/
-        /*cursor: grab;*/
-        /*place-items: end;*/
     }
     .right-handle {
         right: 0;
         border-radius: 0 4px 4px 0;
         background-color: blue;
-        /*height: 40px;*/
-        /*min-width: 8px;*/
-        /*width: 8px;*/
-        /*cursor: grab;*/
     }
 </style>
