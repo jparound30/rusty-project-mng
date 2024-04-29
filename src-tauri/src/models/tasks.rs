@@ -91,7 +91,7 @@ impl Task {
     }
 
     pub async fn delete(conn: &mut sqlx::SqliteConnection, task_id: i64) -> Result<(), Error> {
-        let option = sqlx::query_file!("sqls/tasks/delete.sql", task_id)
+        sqlx::query_file!("sqls/tasks/delete.sql", task_id)
             .execute(conn)
             .await?;
         Ok(())
