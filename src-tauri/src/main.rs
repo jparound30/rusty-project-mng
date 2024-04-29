@@ -2,5 +2,5 @@
 
 #[tokio::main]
 async fn main() {
-    rusty_project_mng::run().await;
+    rusty_project_mng_lib::run().await;
 }
