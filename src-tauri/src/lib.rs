@@ -72,6 +72,7 @@ pub async fn run() {
             crate::apis::tasks::task_add,
             crate::apis::task_status::task_status_list,
             crate::apis::resources::resource_list,
+            crate::apis::resources::resource_get,
             crate::apis::resources::resource_add,
             crate::apis::resources::resource_update,
             crate::apis::tasks::task_get,

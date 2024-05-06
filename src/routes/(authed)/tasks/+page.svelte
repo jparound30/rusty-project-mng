@@ -28,7 +28,7 @@
         let actualCost: number | null = null;
         if (task.actual_time != null) {
 
-            const resource: Resource | undefined = data.resources_list.find(s => s.resource_id == task.assignee_resource_id);
+            const resource: Resource | undefined = data.resource_list.find(s => s.resource_id == task.assignee_resource_id);
             if (resource !== undefined) {
                 actualCost = task.actual_time * resource.cost_per_month / 160
             }

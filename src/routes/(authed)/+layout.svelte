@@ -13,6 +13,7 @@
     <li class="inline-block px-1"><LinkButton name={"ホーム"} url={"/home"} /></li>
     <li class="inline-block px-1"><LinkButton name={"進捗状況"} url={"/evm"} /></li>
     <li class="inline-block px-1"><LinkButton name={"タスク一覧"} url={"/tasks"} /></li>
+    <li class="inline-block px-1"><LinkButton name={"リソース一覧"} url={"/configs/resources"} /></li>
     <li class="inline-block px-1"><LinkButton name={"タスク種別"} url={"/configs/task-types"} /></li>
     <li class="inline-block px-1"><LinkButton name={"マイルストーン一覧"} url={"/configs/milestones"} /></li>
   </ul>

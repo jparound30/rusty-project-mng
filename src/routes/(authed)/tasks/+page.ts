@@ -18,8 +18,8 @@ export async function load({params}) {
             return [] as TaskFull[];
         })
 
-    let resources_list_p =
-        invoke<Resource[]>("resources_list", {})
+    let resource_list_p =
+        invoke<Resource[]>("resource_list", {})
             .then(value => {
                 console.log("リソース一覧取得成功")
                 return value
@@ -59,14 +59,14 @@ export async function load({params}) {
     const ret =
         await Promise.all([
             task_list_p,
-            resources_list_p,
+            resource_list_p,
             evm_info_p,
             planned_value_changes,
             evm_histories,
         ]);
     return {
         task_list: ret[0],
-        resources_list: ret[1],
+        resource_list: ret[1],
         evm_info: ret[2],
         planned_value_changes: ret[3],
         evm_histories: ret[4],

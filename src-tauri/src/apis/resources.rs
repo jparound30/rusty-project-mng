@@ -30,6 +30,39 @@ pub async fn resource_list(connection: State<'_, DbConnection>) -> Result<Vec<Re
 }
 
 #[tauri::command]
+pub async fn resource_get(connection: State<'_, DbConnection>, resource_id: i64) -> Result<Resource, String> {
+
+    let transaction_result =  connection.pool.begin().await;
+    if transaction_result.is_err() {
+        return Err(transaction_result.err().unwrap().to_string())
+    }
+
+    let mut transaction = transaction_result.unwrap();
+    let conn_result = transaction.acquire().await;
+    if conn_result.is_err() {
+        return Err(conn_result.err().unwrap().to_string())
+    }
+
+    let conn = conn_result.ok().unwrap();
+
+    let resource = models::resources::Resource::get(conn, resource_id).await;
+
+    match resource {
+        Ok(info) => {
+            match info {
+                None => {
+                    Err("Not Found".to_string())
+                }
+                Some(res) => {
+                    Ok(res)
+                }
+            }
+        }
+        Err(err) => {Err(err.to_string())}
+    }
+}
+
+#[tauri::command]
 pub async fn resource_add(connection: State<'_, DbConnection>, name: String, cost_per_month: i64) -> Result<String, String> {
     let transaction_result = connection.pool.begin().await;
     if transaction_result.is_err() {

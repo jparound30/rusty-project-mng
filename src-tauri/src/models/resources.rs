@@ -17,6 +17,13 @@ impl Resource {
         Ok(list)
     }
 
+    pub async fn get(conn: &mut sqlx::SqliteConnection, resource_id: i64) -> Result<Option<Resource>, Error> {
+        let resource = sqlx::query_file_as!(Resource, "sqls/resources/get.sql", resource_id)
+            .fetch_optional(conn)
+            .await?;
+        Ok(resource)
+    }
+
     pub async fn add(mut self: Self, conn: &mut sqlx::SqliteConnection) -> Result<(), Error> {
         let last_insert_row_id = sqlx::query_file!(
             "sqls/resources/add.sql",
@@ -30,6 +37,7 @@ impl Resource {
         self.resource_id = last_insert_row_id;
         Ok(())
     }
+
     pub async fn update(self: Self, conn: &mut sqlx::SqliteConnection) -> Result<(), Error> {
         sqlx::query_file!(
             "sqls/resources/update.sql",
